@@ -17,10 +17,11 @@ class RoleUserMiddleware
     {
         $user = $request->user();
 
-        if($user || !in_array($user->role_user, $roles)){
+        if(!$user || !in_array($user->role_user, $roles)){
             return response()->json([
                 'success' => false,
-                'massage' => 'Forbidden!'
+                'massage' => 'Forbidden!',
+                'info' => $user
             ], 403);
         }
 

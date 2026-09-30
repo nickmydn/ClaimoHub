@@ -1,0 +1,30 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+
+class MstVoucherProduct extends Model
+{
+    use HasFactory;
+    protected $table = 'mst_voucher_product';
+    protected $fillable = [
+        'mr_provider',
+        'mr_code',
+        'mr_name',
+        'mr_denomination',
+        'mr_stock',
+        'is_active',
+    ];
+
+    protected $casts = [
+        'is_active' => 'boolean',
+        'mr_denomination' => 'decimal:2'
+    ];
+
+    public function mst_rewards(): HasMany{
+        return $this->hasMany(MstReward::class,'mr_voucher_product_id','id');
+    }
+}
