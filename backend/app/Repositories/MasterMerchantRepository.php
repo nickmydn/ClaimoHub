@@ -21,8 +21,7 @@ class MasterMerchantRepository{
         ]);
     }
 
-    public function isCodeExists(int $distributorId, string $code): bool
-    {
+    public function isCodeExists(int $distributorId, string $code): bool{
         return MstMerchant::where('mm_distributor_id', $distributorId)
             ->where('mm_code', $code)
             ->exists();
@@ -32,8 +31,7 @@ class MasterMerchantRepository{
         return MstMerchant::create($data);
     }
 
-    public function updateData(MstMerchant $mstMerchant, array $data): MstMerchant
-    {
+    public function updateData(MstMerchant $mstMerchant, array $data): MstMerchant{
         $mstMerchant->update([
             'md_name' => $data['md_name'],
             'md_email' => $data['md_email'] ?? null,
@@ -45,8 +43,7 @@ class MasterMerchantRepository{
         return $mstMerchant->refresh();
     }
 
-    public function deleteData(MstMerchant $mstMerchant): bool
-    {
+    public function deleteData(MstMerchant $mstMerchant): bool{
         if ($mstMerchant->mst_merchants()->exists()) {
             throw new \Exception(
                 'Merchant cannot be deleted because it has Distributor and Product.'
