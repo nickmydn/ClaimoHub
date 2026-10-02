@@ -28,7 +28,7 @@ class MasterVoucherProductRepository
         string $code,
         ?int $voucherProductId = null
     ): bool {
-        $query = MstVoucherProduct::where('mr_code', $code);
+        $query = MstVoucherProduct::where('mvp_code', $code);
 
         if ($voucherProductId !== null) {
             $query->where('id', '!=', $voucherProductId);
@@ -47,11 +47,11 @@ class MasterVoucherProductRepository
         array $data
     ): MstVoucherProduct {
         $mstVoucherProduct->update([
-            'mr_provider'      => $data['mr_provider'],
-            'mr_code'          => $data['mr_code'],
-            'mr_name'          => $data['mr_name'],
-            'mr_denomination'  => $data['mr_denomination'],
-            'mr_stock'         => $data['mr_stock'] ?? $mstVoucherProduct->mr_stock,
+            'mvp_provider'      => $data['mvp_provider'],
+            'mvp_code'          => $data['mvp_code'],
+            'mvp_name'          => $data['mvp_name'],
+            'mvp_denomination'  => $data['mvp_denomination'],
+            'mvp_stock'         => $data['mvp_stock'] ?? $mstVoucherProduct->mvp_stock,
             'is_active'        => $data['is_active'] ?? $mstVoucherProduct->is_active,
         ]);
 

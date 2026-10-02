@@ -32,27 +32,27 @@ class MasterVoucherProductController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'mr_provider' => [
+            'mvp_provider' => [
                 'required',
                 'string',
                 'max:50',
             ],
-            'mr_code' => [
+            'mvp_code' => [
                 'required',
                 'string',
                 'max:50',
             ],
-            'mr_name' => [
+            'mvp_name' => [
                 'required',
                 'string',
                 'max:150',
             ],
-            'mr_denomination' => [
+            'mvp_denomination' => [
                 'required',
                 'numeric',
                 'min:0',
             ],
-            'mr_stock' => [
+            'mvp_stock' => [
                 'sometimes',
                 'integer',
                 'min:0',
@@ -96,27 +96,27 @@ class MasterVoucherProductController extends Controller
         MstVoucherProduct $mstVoucherProduct
     ) {
         $validated = $request->validate([
-            'mr_provider' => [
+            'mvp_provider' => [
                 'required',
                 'string',
                 'max:50',
             ],
-            'mr_code' => [
+            'mvp_code' => [
                 'required',
                 'string',
                 'max:50',
             ],
-            'mr_name' => [
+            'mvp_name' => [
                 'required',
                 'string',
                 'max:150',
             ],
-            'mr_denomination' => [
+            'mvp_denomination' => [
                 'required',
                 'numeric',
                 'min:0',
             ],
-            'mr_stock' => [
+            'mvp_stock' => [
                 'sometimes',
                 'integer',
                 'min:0',

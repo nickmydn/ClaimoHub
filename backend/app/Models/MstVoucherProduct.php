@@ -11,17 +11,17 @@ class MstVoucherProduct extends Model
     use HasFactory;
     protected $table = 'mst_voucher_product';
     protected $fillable = [
-        'mr_provider',
-        'mr_code',
-        'mr_name',
-        'mr_denomination',
-        'mr_stock',
+        'mvp_provider',
+        'mvp_code',
+        'mvp_name',
+        'mvp_denomination',
+        'mvp_stock',
         'is_active',
     ];
 
     protected $casts = [
         'is_active' => 'boolean',
-        'mr_denomination' => 'decimal:2'
+        'mvp_denomination' => 'decimal:2'
     ];
 
     public function mst_rewards(): HasMany{

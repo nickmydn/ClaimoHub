@@ -7,13 +7,16 @@ use App\Repositories\MasterVoucherProductRepository;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Exception;
+use App\Logs;
 
 class MasterVoucherProductService
 {
-    public function __construct(
-        protected MasterVoucherProductRepository $repo,
-        protected $logs
-    ) {}
+    protected Logs $logs;
+    public function __construct(protected MasterVoucherProductRepository $repo) {
+        $sectionName = "Master_Voucher_Product_";
+        $this->logs = new Logs( $sectionName.date('Ymd'));
+        $this->logs->write("START", "===");
+    }
 
     public function getAll(): Collection
     {
@@ -63,7 +66,7 @@ class MasterVoucherProductService
         try {
             $result = DB::transaction(function () use ($data) {
 
-                if ($this->repo->isCodeExists($data['mr_code'])) {
+                if ($this->repo->isCodeExists($data['mvp_code'])) {
                     throw new Exception(
                         'Voucher product code already exists.'
                     );
@@ -74,7 +77,7 @@ class MasterVoucherProductService
 
             $this->logs->write(
                 "Master Voucher Product created",
-                "'voucher_product_id' => {$result->id} || 'code' => {$result->mr_code}"
+                "'voucher_product_id' => {$result->id} || 'code' => {$result->mvp_code}"
             );
 
             return $result;
@@ -103,7 +106,7 @@ class MasterVoucherProductService
 
                 if (
                     $this->repo->isCodeExists(
-                        $data['mr_code'],
+                        $data['mvp_code'],
                         $mstVoucherProduct->id
                     )
                 ) {
@@ -120,7 +123,7 @@ class MasterVoucherProductService
 
             $this->logs->write(
                 "Master Voucher Product updated",
-                "'voucher_product_id' => {$result->id} || 'code' => {$result->mr_code}"
+                "'voucher_product_id' => {$result->id} || 'code' => {$result->mvp_code}"
             );
 
             return $result;
@@ -155,7 +158,7 @@ class MasterVoucherProductService
 
             $this->logs->write(
                 "Master Voucher Product deleted",
-                "'voucher_product_id' => {$mstVoucherProduct->id} || 'code' => {$mstVoucherProduct->mr_code}"
+                "'voucher_product_id' => {$mstVoucherProduct->id} || 'code' => {$mstVoucherProduct->mvp_code}"
             );
 
             return $result;
@@ -164,7 +167,7 @@ class MasterVoucherProductService
 
             $this->logs->write(
                 "Failed to delete Master Voucher Product",
-                "'voucher_product_id' => {$mstVoucherProduct->id} || 'code' => {$mstVoucherProduct->mr_code} || 'error' => " .
+                "'voucher_product_id' => {$mstVoucherProduct->id} || 'code' => {$mstVoucherProduct->mvp_code} || 'error' => " .
                 $e->getMessage()
             );
 

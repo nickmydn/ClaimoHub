@@ -7,13 +7,16 @@ use App\Repositories\RewardRepository;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Exception;
+use App\Logs;
 
 class RewardService
 {
-    public function __construct(
-        protected RewardRepository $repo,
-        protected $logs
-    ) {}
+    protected Logs $logs;
+    public function __construct(protected RewardRepository $repo) {
+        $sectionName = "Reward_";
+        $this->logs = new Logs( $sectionName.date('Ymd'));
+        $this->logs->write("START", "===");
+    }
 
     public function getAll(): Collection
     {
