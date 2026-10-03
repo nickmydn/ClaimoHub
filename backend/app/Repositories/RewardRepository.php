@@ -38,7 +38,6 @@ class RewardRepository
 
         return $query->exists();
     }
-
     public function storeData(array $data): MstReward
     {
         return MstReward::create($data)
@@ -67,5 +66,50 @@ class RewardRepository
     public function deleteData(MstReward $mstReward): bool
     {
         return $mstReward->delete();
+    }
+
+    public function getEligibleCampaigns(
+        float $amount,
+        $transactionDate
+    ): Collection {
+        return MstReward::with('mst_voucherPrd')
+            ->where('is_active', true)
+            ->where('mr_min_transaction', '<=', $amount)
+            ->whereDate(
+                'mvp_start_date',
+                '<=',
+                $transactionDate
+            )
+            ->whereDate(
+                'mvp_end_date',
+                '>=',
+                $transactionDate
+            )
+            ->where('mvp_quota', '>', 0)
+            ->whereHas('mst_voucherPrd', function ($query) {
+                $query
+                    ->where('is_active', true)
+                    ->where('mvp_stock', '>', 0);
+            })
+            ->orderBy(
+                'mvp_min_transaction',
+                'desc'
+            )
+            ->get();
+    }
+
+    public function findForUpdate(
+        int $id
+    ): ?MstReward {
+        return MstReward::with('mst_voucherPrd')
+            ->where('id', $id)
+            ->lockForUpdate()
+            ->first();
+    }
+
+    public function decreaseQuota(
+        MstReward $mstReward
+    ): bool {
+        return $mstReward->decrement('mvp_quota');
     }
 }

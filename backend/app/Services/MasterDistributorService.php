@@ -24,7 +24,8 @@ class MasterDistributorService{
     }
 
     public function getDataDetail(MstDistributor $distributor){
-          return $this->repo->getWithMerchants($distributor);
+        
+        return $this->repo->getWithMerchants($distributor);
     }
 
     public function storeData(array $data)

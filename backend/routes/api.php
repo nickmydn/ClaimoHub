@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\MasterMerchantController;
 use App\Http\Controllers\Api\MasterProductController;
 use App\Http\Controllers\Api\MasterVoucherProductController;
 use App\Http\Controllers\Api\RewardController;
+use App\Http\Controllers\Api\TransRewardController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -27,6 +28,15 @@ Route::middleware(['auth:sanctum', 'role:admin'])->group(function () {
     Route::apiResource('mst-product', MasterProductController::class);
     Route::apiResource('mst-vch-product', MasterVoucherProductController::class);
     Route::apiResource('mst-reward', RewardController::class);
+    Route::apiResource('prcss-trx', TransRewardController::class);
+
+});
+
+Route::middleware(['auth:sanctum', 'role:customer'])->group(function () {
+    Route::post('customer/prcs-trx',[TransRewardController::class, 'storeCustTrx']);
+    Route::get('customer/prcs-trx', [TransRewardController::class, 'myTrx']);
+
+    Route::post('customer/prcs-trx/{transaction}/reward',[TransRewardController::class, 'claimReward']);
 });
 
 
