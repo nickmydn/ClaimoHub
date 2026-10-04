@@ -31,6 +31,6 @@ class MstReward extends Model
 
     public function mst_voucherPrd(): BelongsTo
     {
-        return $this->belongsTo(MstVoucherProduct::class);
+        return $this->belongsTo(MstVoucherProduct::class, "mr_voucher_product_id","id");
     }
 }

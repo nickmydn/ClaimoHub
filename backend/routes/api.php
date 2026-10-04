@@ -5,6 +5,8 @@ use App\Http\Controllers\Api\MasterDistributorController;
 use App\Http\Controllers\Api\MasterMerchantController;
 use App\Http\Controllers\Api\MasterProductController;
 use App\Http\Controllers\Api\MasterVoucherProductController;
+use App\Http\Controllers\Api\MockVoucherApiController;
+use App\Http\Controllers\Api\ProcessRewardController;
 use App\Http\Controllers\Api\RewardController;
 use App\Http\Controllers\Api\TransRewardController;
 use Illuminate\Http\Request;
@@ -37,6 +39,16 @@ Route::middleware(['auth:sanctum', 'role:customer'])->group(function () {
     Route::get('customer/prcs-trx', [TransRewardController::class, 'myTrx']);
 
     Route::post('customer/prcs-trx/{transaction}/reward',[TransRewardController::class, 'claimReward']);
+
+    Route::post(
+        'customer/rewards/{rewardOrderTrans}/redeem',
+        [ProcessRewardController::class, 'redeem']
+    );
+
+    Route::get(
+        'customer/redemptions',
+        [ProcessRewardController::class, 'myRedemptions']
+    );
 });
 
 
@@ -46,6 +58,11 @@ Route::middleware(['auth:sanctum', 'role:admin'])->get('/admin-test', function (
         'message' => 'You are an admin',
     ]);
 });
+
+Route::post(
+    'mock-voucher/vouchers/issue',
+    [MockVoucherApiController::class, 'issue']
+);
 
 Route::get('/user', function (Request $request) {
     return $request->user();

@@ -34,7 +34,7 @@ class MstMerchant extends Model
     ];
 
     public function mst_distributor(): BelongsTo{
-        return $this->belongsTo(MstDistributor::class);
+        return $this->belongsTo(MstDistributor::class,'mm_distributor_id','id');
     }
 
     public function mst_products(): HasMany{

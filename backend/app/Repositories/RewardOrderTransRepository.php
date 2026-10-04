@@ -25,4 +25,15 @@ class RewardOrderTransRepository
     ): RewardOrderTrans {
         return RewardOrderTrans::create($data);
     }
+
+    public function findById(
+        int $id
+    ): ?RewardOrderTrans {
+
+        return RewardOrderTrans::with([
+            'campaign',
+            'voucherProduct',
+        ])
+        ->find($id);
+    }
 }

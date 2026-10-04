@@ -25,6 +25,6 @@ class MstProduct extends Model
     ];
 
     public function mst_merchant(): BelongsTo{
-        return $this->belongsTo(MstMerchant::class);
+        return $this->belongsTo(MstMerchant::class, "mp_merchant_id", "id");
     }
 }

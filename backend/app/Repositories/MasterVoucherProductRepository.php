@@ -62,4 +62,16 @@ class MasterVoucherProductRepository
     {
         return $mstVoucherProduct->delete();
     }
+
+    public function increaseStock(
+        MstVoucherProduct $voucherProduct
+    ): void {
+        $voucherProduct->increment('mvp_stock');
+    }
+
+    public function decreaseStock(
+        MstVoucherProduct $voucherProduct
+    ): void {
+        $voucherProduct->decrement('mvp_stock');
+    }
 }

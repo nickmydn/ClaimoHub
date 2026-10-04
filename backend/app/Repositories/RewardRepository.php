@@ -68,7 +68,7 @@ class RewardRepository
         return $mstReward->delete();
     }
 
-    public function getEligibleCampaigns(
+    public function getEligibleRewards(
         float $amount,
         $transactionDate
     ): Collection {
@@ -105,6 +105,12 @@ class RewardRepository
             ->where('id', $id)
             ->lockForUpdate()
             ->first();
+    }
+
+    public function increaseQuota(
+        MstReward $reward
+    ): void {
+        $reward->increment('mr_quota');
     }
 
     public function decreaseQuota(

@@ -35,4 +35,11 @@ return [
         ],
     ],
 
+    'voucher_api' => [
+        'url' => env(
+            'VOUCHER_API_URL',
+            'http://127.0.0.1:8000/api/mock-voucher'
+        ),
+    ],
+
 ];

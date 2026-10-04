@@ -34,16 +34,16 @@ class TransRewardModel extends Model
 
     public function user(): BelongsTo
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, "trc_user_id","id");
     }
 
     public function merchant(): BelongsTo
     {
-        return $this->belongsTo(MstMerchant::class);
+        return $this->belongsTo(MstMerchant::class, "trc_merchant_id","id");
     }
 
     public function reward(): HasOne
     {
-        return $this->hasOne(RewardOrderTrans::class);
+        return $this->hasOne(RewardOrderTrans::class, "transaction_id","id");
     }
 }

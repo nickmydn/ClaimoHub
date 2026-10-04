@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class RewardOrderTrans extends Model
 {
@@ -24,21 +25,29 @@ class RewardOrderTrans extends Model
     public function transaction(): BelongsTo
     {
         return $this->belongsTo(
-            TransRewardModel::class
+            TransRewardModel::class, "transaction_id", "id"
         );
     }
 
     public function campaign(): BelongsTo
     {
         return $this->belongsTo(
-            MstReward::class
+            MstReward::class, "campaign_id", "id"
         );
     }
 
     public function voucherProduct(): BelongsTo
     {
         return $this->belongsTo(
-            MstVoucherProduct::class
+            MstVoucherProduct::class, "voucher_product_id","id"
+        );
+    }
+
+    public function voucherRedemption(): HasOne
+    {
+        return $this->hasOne(
+            VoucherRedemption::class,
+            'tvr_reward_order_trans_id',"id"
         );
     }
 }

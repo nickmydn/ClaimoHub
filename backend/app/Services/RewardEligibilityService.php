@@ -49,25 +49,24 @@ class RewardEligibilityService
                     }
 
                     // 2. Cari campaign yang eligible
-                    $campaigns =
-                        $this->reward_repository
-                            ->getEligibleCampaigns(
-                                (float) $transRewardModel->amount,
-                                $transRewardModel->transaction_date
+                    $rewards = $this->reward_repository
+                            ->getEligibleRewards(
+                                (float) $transRewardModel->trc_amount,
+                                $transRewardModel->trc_trx_date
                             );
 
-                    if ($campaigns->isEmpty()) {
+                    if ($rewards->isEmpty()) {
                         return null;
                     }
 
                     // 3. Ambil campaign pertama
-                    $campaign = $campaigns->first();
+                    $rewards = $rewards->first();
 
                     // 4. Lock campaign
                     $campaign =
                         $this->reward_repository
                             ->findForUpdate(
-                                $campaign->id
+                                $rewards->id
                             );
 
                     if (!$campaign) {
@@ -90,18 +89,15 @@ class RewardEligibilityService
                     }
 
                     // 7. Re-check stock
-                    if (
-                        !$voucherProduct->is_active
-                        || $voucherProduct->stock <= 0
-                    ) {
+                    if (!$voucherProduct->is_active || $voucherProduct->mvp_stock <= 0) {
                         return null;
                     }
 
                     // 8. Kurangi quota
-                    $campaign->decrement('quota');
+                    $campaign->decrement('mvp_quota');
 
                     // 9. Reserve voucher stock
-                    $voucherProduct->decrement('stock');
+                    $voucherProduct->decrement('mvp_stock');
 
                     // 10. Create reward
                     return $this->rewardOrderTransRepository->storeData([
@@ -115,7 +111,7 @@ class RewardEligibilityService
                             $voucherProduct->id,
 
                         'reward_amount' =>
-                            $voucherProduct->denomination,
+                            $voucherProduct->mvp_denomination,
 
                         'status' =>
                             'pending',
