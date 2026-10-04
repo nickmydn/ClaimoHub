@@ -317,7 +317,12 @@ const handleSubmit = async () => {
       password: password.value,
     })
 
+  const redirect = router.currentRoute.value.query.redirect
+  if (typeof redirect === 'string') {
+    await router.push(redirect)
+  } else {
     await router.push('/')
+  }
 
   } catch (error: any) {
     console.error('Login error:', error)

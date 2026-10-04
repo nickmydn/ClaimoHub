@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\DashboardController;
 use App\Http\Controllers\Api\MasterDistributorController;
 use App\Http\Controllers\Api\MasterMerchantController;
 use App\Http\Controllers\Api\MasterProductController;
@@ -32,6 +33,7 @@ Route::middleware(['auth:sanctum', 'role:admin'])->group(function () {
     Route::apiResource('mst-reward', RewardController::class);
     Route::apiResource('prcss-trx', TransRewardController::class);
 
+    Route::get('admin/dashboard',[DashboardController::class, 'adminDashboard']);
 });
 
 Route::middleware(['auth:sanctum', 'role:customer'])->group(function () {

@@ -166,13 +166,13 @@
       </ul>
 
       <!-- Sign Out -->
-      <router-link
-        to="/signin"
+      <button
+        type="button"
         @click="signOut"
         class="group mt-3 flex w-full items-center justify-center gap-3 rounded-lg border border-gray-200 px-3 py-2 text-theme-sm font-medium text-gray-700 hover:bg-gray-100 hover:text-gray-700 dark:border-gray-800 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300"
       >
         Sign out
-      </router-link>
+      </button>
     </div>
     <!-- Dropdown End -->
   </div>
@@ -183,6 +183,11 @@ import { UserCircleIcon, ChevronDownIcon, SettingsIcon, InfoCircleIcon } from '@
 import { RouterLink } from 'vue-router'
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useRTL } from '@/composables/useRTL'
+import { useRouter } from 'vue-router'
+import { useAuthStore } from '@/stores/auth'
+
+const router = useRouter()
+const authStore = useAuthStore()
 
 interface Language {
   id: string
@@ -263,9 +268,15 @@ const selectLanguage = (localeId: string) => {
   closeDropdown()
 }
 
-const signOut = () => {
-  console.log('Signing out...')
-  closeDropdown()
+const signOut = async () => {
+  try {
+    await authStore.logout()
+  } catch (error) {
+    console.error('Logout error:', error)
+  } finally {
+    closeDropdown()
+    await router.push('/signin')
+  }
 }
 
 const handleClickOutside = (event: MouseEvent) => {

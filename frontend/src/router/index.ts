@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import { useAuthStore } from '@/stores/auth'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -12,6 +13,8 @@ const router = createRouter({
       component: () => import('../views/Ecommerce.vue'),
       meta: {
         title: 'eCommerce Dashboard',
+        requiresAuth: true,
+        roles: ['admin'],
       },
     },
     {
@@ -20,6 +23,7 @@ const router = createRouter({
       component: () => import('../views/Others/Calendar.vue'),
       meta: {
         title: 'Calendar',
+        requiresAuth: true,
       },
     },
     {
@@ -28,6 +32,7 @@ const router = createRouter({
       component: () => import('../views/Others/UserProfile.vue'),
       meta: {
         title: 'Profile',
+        requiresAuth: true,
       },
     },
     {
@@ -36,6 +41,7 @@ const router = createRouter({
       component: () => import('../views/Forms/FormElements.vue'),
       meta: {
         title: 'Form Elements',
+        requiresAuth: true,
       },
     },
     {
@@ -44,6 +50,7 @@ const router = createRouter({
       component: () => import('../views/Tables/BasicTables.vue'),
       meta: {
         title: 'Basic Tables',
+        requiresAuth: true,
       },
     },
     {
@@ -62,6 +69,7 @@ const router = createRouter({
       component: () => import('../views/UiElements/Alerts.vue'),
       meta: {
         title: 'Alerts',
+        requiresAuth: true,
       },
     },
     {
@@ -70,6 +78,7 @@ const router = createRouter({
       component: () => import('../views/UiElements/Avatars.vue'),
       meta: {
         title: 'Avatars',
+        requiresAuth: true,
       },
     },
     {
@@ -78,6 +87,7 @@ const router = createRouter({
       component: () => import('../views/UiElements/Badges.vue'),
       meta: {
         title: 'Badge',
+        requiresAuth: true,
       },
     },
 
@@ -87,6 +97,7 @@ const router = createRouter({
       component: () => import('../views/UiElements/Buttons.vue'),
       meta: {
         title: 'Buttons',
+        requiresAuth: true,
       },
     },
 
@@ -96,6 +107,7 @@ const router = createRouter({
       component: () => import('../views/UiElements/Images.vue'),
       meta: {
         title: 'Images',
+        requiresAuth: true,
       },
     },
     {
@@ -104,6 +116,7 @@ const router = createRouter({
       component: () => import('../views/UiElements/Videos.vue'),
       meta: {
         title: 'Videos',
+        requiresAuth: true,
       },
     },
     {
@@ -112,6 +125,7 @@ const router = createRouter({
       component: () => import('../views/Pages/BlankPage.vue'),
       meta: {
         title: 'Blank',
+        requiresAuth: true,
       },
     },
 
@@ -140,12 +154,74 @@ const router = createRouter({
         title: 'Signup',
       },
     },
+    // {
+    //   path: '/admin/distributors',
+    //   name: 'Admin Distributors',
+    //   component: () => import('../views/Admin/Distributor.vue'),
+    //   meta: {
+    //     title: 'Distributors',
+    //     requiresAuth: true,
+    //     roles: ['admin'],
+    //   },
+    // },
   ],
 })
 
 export default router
 
 router.beforeEach((to, from, next) => {
-  document.title = `Vue.js ${to.meta.title} | TailAdmin - Vue.js Tailwind CSS Dashboard Template`
+  const authStore = useAuthStore()
+
+  document.title = `${to.meta.title || 'ClaimoHub'} | ClaimoHub`
+
+  const requiresAuth = to.meta.requiresAuth
+  const allowedRoles = to.meta.roles as string[] | undefined
+
+  // =========================
+  // AUTHENTICATION
+  // =========================
+
+  if (requiresAuth && !authStore.isAuthenticated) {
+    next({
+      name: 'Signin',
+      query: {
+        redirect: to.fullPath,
+      },
+    })
+
+    return
+  }
+
+  // =========================
+  // ALREADY LOGIN
+  // =========================
+
+  if (
+    authStore.isAuthenticated &&
+    (to.name === 'Signin' || to.name === 'Signup')
+  ) {
+    next({
+      name: 'Ecommerce',
+    })
+
+    return
+  }
+
+  // =========================
+  // ROLE AUTHORIZATION
+  // =========================
+
+  if (
+    requiresAuth &&
+    allowedRoles &&
+    !allowedRoles.includes(authStore.role)
+  ) {
+    next({
+      name: 'Ecommerce',
+    })
+
+    return
+  }
+
   next()
 })
