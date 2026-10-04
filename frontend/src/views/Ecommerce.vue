@@ -18,7 +18,7 @@
       </div>
 
       <div class="col-span-12 xl:col-span-7">
-        <RecentOrders />
+        <RecentOrders :transactions="recentTransactions"/>
       </div>
     </div>
   </AdminLayout>

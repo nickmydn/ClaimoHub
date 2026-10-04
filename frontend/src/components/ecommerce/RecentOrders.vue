@@ -1,10 +1,20 @@
+```vue
 <template>
   <div
     class="overflow-hidden rounded-2xl border border-gray-200 bg-white px-4 pb-3 pt-4 dark:border-gray-800 dark:bg-white/3 sm:px-6"
   >
-    <div class="flex flex-col gap-2 mb-4 sm:flex-row sm:items-center sm:justify-between">
+    <!-- Header -->
+    <div
+      class="flex flex-col gap-2 mb-4 sm:flex-row sm:items-center sm:justify-between"
+    >
       <div>
-        <h3 class="text-lg font-semibold text-gray-800 dark:text-white/90">Recent Orders</h3>
+        <h3 class="text-lg font-semibold text-gray-800 dark:text-white/90">
+          Recent Transactions
+        </h3>
+
+        <p class="text-sm text-gray-500 dark:text-gray-400">
+          Latest customer transactions
+        </p>
       </div>
 
       <div class="flex items-center gap-3">
@@ -58,64 +68,103 @@
       </div>
     </div>
 
+    <!-- Table -->
     <div class="max-w-full overflow-x-auto custom-scrollbar">
       <table class="min-w-full">
         <thead>
           <tr class="border-t border-gray-100 dark:border-gray-800">
             <th class="py-3 text-start">
-              <p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">Products</p>
+              <p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">
+                Transaction No
+              </p>
             </th>
+
             <th class="py-3 text-start">
-              <p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">Category</p>
+              <p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">
+                Customer
+              </p>
             </th>
+
             <th class="py-3 text-start">
-              <p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">Price</p>
+              <p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">
+                Merchant
+              </p>
             </th>
+
             <th class="py-3 text-start">
-              <p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">Status</p>
+              <p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">
+                Amount
+              </p>
+            </th>
+
+            <th class="py-3 text-start">
+              <p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">
+                Status
+              </p>
             </th>
           </tr>
         </thead>
+
         <tbody>
+          <!-- Empty state -->
+          <tr v-if="transactions.length === 0">
+            <td
+              colspan="5"
+              class="py-8 text-center text-gray-500 text-theme-sm dark:text-gray-400"
+            >
+              No transactions found.
+            </td>
+          </tr>
+
+          <!-- Transactions -->
           <tr
-            v-for="(product, index) in products"
-            :key="index"
+            v-for="transaction in transactions"
+            :key="transaction.id"
             class="border-t border-gray-100 dark:border-gray-800"
           >
+            <!-- Transaction No -->
             <td class="py-3 whitespace-nowrap">
-              <div class="flex items-center gap-3">
-                <div class="h-[50px] w-[50px] overflow-hidden rounded-md">
-                  <img :src="product.image" :alt="product.name" />
-                </div>
-                <div>
-                  <p class="font-medium text-gray-800 text-theme-sm dark:text-white/90">
-                    {{ product.name }}
-                  </p>
-                  <span class="text-gray-500 text-theme-xs dark:text-gray-400"
-                    >{{ product.variants }} Variants</span
-                  >
-                </div>
-              </div>
+              <p
+                class="font-medium text-gray-800 text-theme-sm dark:text-white/90"
+              >
+                {{ transaction.trc_trx_no }}
+              </p>
+
+              <span class="text-gray-500 text-theme-xs dark:text-gray-400">
+                {{ formatDate(transaction.trc_trx_date) }}
+              </span>
             </td>
+
+            <!-- Customer -->
             <td class="py-3 whitespace-nowrap">
-              <p class="text-gray-500 text-theme-sm dark:text-gray-400">{{ product.category }}</p>
+              <p class="text-gray-500 text-theme-sm dark:text-gray-400">
+                {{ transaction.user?.name ?? '-' }}
+              </p>
             </td>
+
+            <!-- Merchant -->
             <td class="py-3 whitespace-nowrap">
-              <p class="text-gray-500 text-theme-sm dark:text-gray-400">{{ product.price }}</p>
+              <p class="text-gray-500 text-theme-sm dark:text-gray-400">
+                {{ transaction.merchant?.mm_name ?? '-' }}
+              </p>
             </td>
+
+            <!-- Amount -->
+            <td class="py-3 whitespace-nowrap">
+              <p class="text-gray-800 text-theme-sm dark:text-white/90">
+                {{ formatCurrency(transaction.trc_amount) }}
+              </p>
+            </td>
+
+            <!-- Status -->
             <td class="py-3 whitespace-nowrap">
               <span
-                :class="{
-                  'rounded-full px-2 py-0.5 text-theme-xs font-medium': true,
-                  'bg-success-50 text-success-600 dark:bg-success-500/15 dark:text-success-500':
-                    product.status === 'Delivered',
-                  'bg-warning-50 text-warning-600 dark:bg-warning-500/15 dark:text-orange-400':
-                    product.status === 'Pending',
-                  'bg-error-50 text-error-600 dark:bg-error-500/15 dark:text-error-500':
-                    product.status === 'Canceled',
-                }"
+                :class="[
+                  'rounded-full px-2 py-0.5 text-theme-xs font-medium',
+                  getStatusClass(transaction.trc_status),
+                ]"
               >
-                {{ product.status }}
+                {{ formatStatus(transaction.trc_status) }}
               </span>
             </td>
           </tr>
@@ -126,48 +175,69 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+defineProps<{
+  transactions: Array<{
+    id: number
+    trc_trx_no: string
+    trc_amount: string | number
+    trc_status: string
+    trc_trx_date: string
+    user?: {
+      id: number
+      name: string
+    } | null
+    merchant?: {
+      id: number
+      mm_name: string
+    } | null
+  }>
+}>()
 
-const products = ref([
-  {
-    name: 'Macbook pro 13"',
-    variants: 2,
-    image: '/images/product/product-01.jpg',
-    category: 'Laptop',
-    price: '$2399.00',
-    status: 'Delivered',
-  },
-  {
-    name: 'Apple Watch Ultra',
-    variants: 1,
-    image: '/images/product/product-02.jpg',
-    category: 'Watch',
-    price: '$879.00',
-    status: 'Pending',
-  },
-  {
-    name: 'iPhone 15 Pro Max',
-    variants: 2,
-    image: '/images/product/product-03.jpg',
-    category: 'SmartPhone',
-    price: '$1869.00',
-    status: 'Delivered',
-  },
-  {
-    name: 'iPad Pro 3rd Gen',
-    variants: 2,
-    image: '/images/product/product-04.jpg',
-    category: 'Electronics',
-    price: '$1699.00',
-    status: 'Canceled',
-  },
-  {
-    name: 'Airpods Pro 2nd Gen',
-    variants: 1,
-    image: '/images/product/product-05.jpg',
-    category: 'Accessories',
-    price: '$240.00',
-    status: 'Delivered',
-  },
-])
+const formatCurrency = (amount: string | number) => {
+  return new Intl.NumberFormat('id-ID', {
+    style: 'currency',
+    currency: 'IDR',
+    maximumFractionDigits: 0,
+  }).format(Number(amount))
+}
+
+const formatDate = (date: string) => {
+  if (!date) {
+    return '-'
+  }
+
+  return new Intl.DateTimeFormat('id-ID', {
+    day: '2-digit',
+    month: 'short',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  }).format(new Date(date))
+}
+
+const formatStatus = (status: string) => {
+  if (!status) {
+    return '-'
+  }
+
+  return status.charAt(0).toUpperCase() + status.slice(1)
+}
+
+const getStatusClass = (status: string) => {
+  switch (status?.toLowerCase()) {
+    case 'completed':
+      return 'bg-success-50 text-success-600 dark:bg-success-500/15 dark:text-success-500'
+
+    case 'pending':
+      return 'bg-warning-50 text-warning-600 dark:bg-warning-500/15 dark:text-orange-400'
+
+    case 'failed':
+    case 'canceled':
+      return 'bg-error-50 text-error-600 dark:bg-error-500/15 dark:text-error-500'
+
+    default:
+      return 'bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400'
+  }
+}
 </script>
+```
