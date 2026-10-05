@@ -3,18 +3,14 @@
     <div class="grid grid-cols-12 gap-4 md:gap-6">
       <div class="col-span-12 space-y-6 xl:col-span-7">
         <EcommerceMetrics :statistics="statistics" />
-        <MonthlyTarget />
+        <MonthlyTarget :statistics="statistics" />
       </div>
       <div class="col-span-12 xl:col-span-5">
-        <MonthlySale />
+        <MonthlySale :chart-data="transactionChart" />
       </div>
 
       <div class="col-span-12">
-        <StatisticsChart />
-      </div>
-
-      <div class="col-span-12 xl:col-span-5">
-        <CustomerDemographic />
+        <StatisticsChart :chart-data="transactionChart" />
       </div>
 
       <div class="col-span-12 xl:col-span-7">
@@ -29,9 +25,8 @@ import { onMounted, ref } from 'vue'
 
 import AdminLayout from '../components/layout/AdminLayout.vue'
 import EcommerceMetrics from '../components/ecommerce/EcommerceMetrics.vue'
-import MonthlyTarget from '../components/ecommerce/MonthlySale.vue'
-import MonthlySale from '../components/ecommerce/MonthlyTarget.vue'
-import CustomerDemographic from '../components/ecommerce/CustomerDemographic.vue'
+import MonthlyTarget from '../components/ecommerce/MonthlyTarget.vue'
+import MonthlySale from '../components/ecommerce/MonthlySale.vue'
 import StatisticsChart from '../components/ecommerce/StatisticsChart.vue'
 import RecentOrders from '../components/ecommerce/RecentOrders.vue'
 
@@ -50,6 +45,8 @@ const statistics = ref({
 
 const recentTransactions = ref([])
 
+const transactionChart = ref([])
+
 const loadDashboard = async () => {
   loading.value = true
   errorMessage.value = ''
@@ -61,6 +58,7 @@ const loadDashboard = async () => {
 
     statistics.value = data.statistics
     recentTransactions.value = data.recent_transactions
+    transactionChart.value = data.transaction_chart
   } catch (error: any) {
     console.error('Dashboard error:', error)
 

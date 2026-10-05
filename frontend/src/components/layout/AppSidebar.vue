@@ -23,7 +23,7 @@
         <img
           v-if="isExpanded || isHovered || isMobileOpen"
           class="dark:hidden"
-          src="/images/logo/logo.svg"
+          src="/images/logo/logo_claimhub2dark1.png"
           alt="Logo"
           width="150"
           height="40"
@@ -31,14 +31,14 @@
         <img
           v-if="isExpanded || isHovered || isMobileOpen"
           class="hidden dark:block"
-          src="/images/logo/logo-dark.svg"
+          src="/images/logo/logo_claimohub2.png"
           alt="Logo"
           width="150"
           height="40"
         />
         <img
           v-else
-          src="/images/logo/logo-icon.svg"
+          src="/images/logo/logo_claimohub2.png"
           alt="Logo"
           width="32"
           height="32"
@@ -206,13 +206,13 @@
           </div>
         </div>
       </nav>
-      <SidebarWidget v-if="isExpanded || isHovered || isMobileOpen" />
+      <!-- <SidebarWidget v-if="isExpanded || isHovered || isMobileOpen" /> -->
     </div>
   </aside>
 </template>
 
 <script setup lang="ts">
-import { watch } from 'vue'
+import { computed, watch } from 'vue'
 import { useRoute } from 'vue-router'
 
 import { useSidebar } from '@/composables/useSidebar'
@@ -230,6 +230,9 @@ import {
 } from '@/icons'
 import BoxCubeIcon from '@/icons/BoxCubeIcon.vue'
 import SidebarWidget from './SidebarWidget.vue'
+import { useAuthStore } from '@/stores/auth'
+
+const authStore = useAuthStore()
 
 const route = useRoute()
 
@@ -256,89 +259,129 @@ interface MenuGroup {
   items: MenuItem[]
 }
 
-const menuGroups: MenuGroup[] = [
-  {
-    title: 'Menu',
-    items: [
+const menuGroups = computed<MenuGroup[]>(() => {
+  if (authStore.role === 'admin') {
+    return [
       {
-        icon: GridIcon,
-        name: 'Dashboard',
-        subItems: [{ name: 'Ecommerce', path: '/', pro: false }],
-      },
-      {
-        icon: CalenderIcon,
-        name: 'Calendar',
-        path: '/calendar',
-      },
-      {
-        icon: UserCircleIcon,
-        name: 'User Profile',
-        path: '/profile',
+        title: 'Menu',
+        items: [
+          {
+            icon: GridIcon,
+            name: 'Dashboard',
+            subItems: [
+              {
+                name: 'Dashboard',
+                path: '/',
+                pro: false,
+              },
+            ],
+          },
+          {
+            icon: UserCircleIcon,
+            name: 'User Profile',
+            path: '/profile',
+          },
+        ],
       },
 
       {
-        name: 'Forms',
-        icon: ListIcon,
-        subItems: [
-          { name: 'Form Elements', path: '/form-elements', pro: false },
+        title: 'Master',
+        items: [
+          {
+            icon: ListIcon,
+            name: 'Master Data',
+            subItems: [
+              {
+                name: 'Distributor',
+                path: '/admin/distributors',
+                pro: false,
+              },
+              {
+                name: 'Merchant',
+                path: '/admin/merchants',
+                pro: false,
+              },
+              {
+                name: 'Product',
+                path: '/admin/products',
+                pro: false,
+              },
+              {
+                name: 'Voucher Product',
+                path: '/admin/voucher-products',
+                pro: false,
+              },
+              {
+                name: 'Reward',
+                path: '/admin/rewards',
+                pro: false,
+              },
+            ],
+          },
         ],
       },
+
       {
-        name: 'Tables',
-        icon: TableIcon,
-        subItems: [{ name: 'Basic Tables', path: '/basic-tables', pro: false }],
-      },
-      {
-        name: 'Pages',
-        icon: PageIcon,
-        subItems: [
-          { name: 'Blank Page', path: '/blank', pro: false },
-          { name: '404 Page', path: '/error-404', pro: false },
+        title: 'Transaction',
+        items: [
+          {
+            icon: TableIcon,
+            name: 'Transactions',
+            path: '/admin/transactions',
+          },
         ],
       },
-    ],
-  },
-  {
-    title: 'Others',
-    items: [
+    ]
+  }
+
+  if (authStore.role === 'customer') {
+    return [
       {
-        icon: PieChartIcon,
-        name: 'Charts',
-        subItems: [
-          { name: 'Line Chart', path: '/line-chart', pro: false },
-          { name: 'Bar Chart', path: '/bar-chart', pro: false },
+        title: 'Menu',
+        items: [
+          {
+            icon: GridIcon,
+            name: 'Dashboard',
+            subItems: [
+              {
+                name: 'Dashboard',
+                path: '/',
+                pro: false,
+              },
+            ],
+          },
+
+          {
+            icon: TableIcon,
+            name: 'My Transactions',
+            path: '/customer/transactions',
+          },
+
+          {
+            icon: PieChartIcon,
+            name: 'My Rewards',
+            path: '/customer/rewards',
+          },
+
+          {
+            icon: UserCircleIcon,
+            name: 'Profile',
+            path: '/profile',
+          },
         ],
       },
-      {
-        icon: BoxCubeIcon,
-        name: 'Ui Elements',
-        subItems: [
-          { name: 'Alerts', path: '/alerts', pro: false },
-          { name: 'Avatars', path: '/avatars', pro: false },
-          { name: 'Badge', path: '/badge', pro: false },
-          { name: 'Buttons', path: '/buttons', pro: false },
-          { name: 'Images', path: '/images', pro: false },
-          { name: 'Videos', path: '/videos', pro: false },
-        ],
-      },
-      {
-        icon: PlugInIcon,
-        name: 'Authentication',
-        subItems: [
-          { name: 'Signin', path: '/signin', pro: false },
-          { name: 'Signup', path: '/signup', pro: false },
-        ],
-      },
-    ],
-  },
-]
+    ]
+  }
+
+  return []
+})
 
 const isActive = (path?: string) => (path ? route.path === path : false)
 
 
 
 const setActiveMenuFromRoute = () => {
-  menuGroups.forEach((group, groupIndex) => {
+  menuGroups.value.forEach((group, groupIndex) => {
     group.items.forEach((item, itemIndex) => {
       if (item.subItems?.some((subItem) => isActive(subItem.path))) {
         openSubmenu.value = `${groupIndex}-${itemIndex}`

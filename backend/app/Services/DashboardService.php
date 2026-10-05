@@ -38,6 +38,10 @@ class DashboardService
                             ->getTotalRewardsClaimed(),
                 ],
 
+                'transaction_chart' =>
+                    $this->dashboardRepository
+                        ->getTransactionChart(),
+
                 'recent_transactions' =>
                     $this->dashboardRepository
                         ->getRecentTransactions(),

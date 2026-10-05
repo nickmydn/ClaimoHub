@@ -9,12 +9,80 @@ const router = createRouter({
   routes: [
     {
       path: '/',
-      name: 'Ecommerce',
-      component: () => import('../views/Ecommerce.vue'),
+      name: 'Dashboard',
+      component: () => import('../views/Dashboard.vue'),
       meta: {
-        title: 'eCommerce Dashboard',
+        requiresAuth: true,
+      },
+    },
+    {
+      path: '/admin/distributors',
+      name: 'Admin Distributors',
+      component: () => import('../views/Admin/Distributor.vue'),
+      meta: {
+        title: 'Distributors',
         requiresAuth: true,
         roles: ['admin'],
+      },
+    },
+    {
+      path: '/admin/merchants',
+      name: 'Admin Merchants',
+      component: () => import('../views/Admin/Merchant.vue'),
+      meta: {
+        title: 'Merchants',
+        requiresAuth: true,
+        roles: ['admin'],
+      },
+    },
+    {
+      path: '/admin/products',
+      name: 'Admin Products',
+      component: () => import('../views/Admin/Product.vue'),
+      meta: {
+        title: 'Products',
+        requiresAuth: true,
+        roles: ['admin'],
+      },
+    },
+    {
+      path: '/admin/voucher-products',
+      name: 'Admin Voucher Products',
+      component: () => import('../views/Admin/VoucherProduct.vue'),
+      meta: {
+        title: 'Voucher Products',
+        requiresAuth: true,
+        roles: ['admin'],
+      },
+    },
+    {
+      path: '/admin/rewards',
+      name: 'Admin Rewards',
+      component: () => import('../views/Admin/Reward.vue'),
+      meta: {
+        title: 'Rewards',
+        requiresAuth: true,
+        roles: ['admin'],
+      },
+    },
+    {
+      path: '/customer/transactions',
+      name: 'Customer Transactions',
+      component: () => import('../views/Customer/Transactions.vue'),
+      meta: {
+        title: 'My Transactions',
+        requiresAuth: true,
+        roles: ['customer'],
+      },
+    },
+    {
+      path: '/customer/rewards',
+      name: 'Customer Rewards',
+      component: () => import('../views/Customer/Rewards.vue'),
+      meta: {
+        title: 'My Rewards',
+        requiresAuth: true,
+        roles: ['customer'],
       },
     },
     {
@@ -201,9 +269,8 @@ router.beforeEach((to, from, next) => {
     (to.name === 'Signin' || to.name === 'Signup')
   ) {
     next({
-      name: 'Ecommerce',
+      name: 'Dashboard',
     })
-
     return
   }
 
@@ -217,9 +284,8 @@ router.beforeEach((to, from, next) => {
     !allowedRoles.includes(authStore.role)
   ) {
     next({
-      name: 'Ecommerce',
+      name: 'Dashboard',
     })
-
     return
   }
 

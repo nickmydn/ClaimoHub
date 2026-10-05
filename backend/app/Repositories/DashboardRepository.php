@@ -48,4 +48,42 @@ class DashboardRepository
             ->limit($limit)
             ->get();
     }
+
+    public function getTransactionChart(): array
+    {
+        $startDate = now()->subDays(6)->startOfDay();
+        $endDate = now()->endOfDay();
+
+        $transactions = TransRewardModel::query()
+            ->selectRaw("
+                DATE(trc_trx_date) as date,
+                COUNT(*) as total_transactions,
+                SUM(trc_amount) as total_amount
+            ")
+            ->whereBetween('trc_trx_date', [$startDate, $endDate])
+            ->groupByRaw('DATE(trc_trx_date)')
+            ->orderBy('date')
+            ->get()
+            ->keyBy('date');
+
+        $result = [];
+
+        for ($i = 6; $i >= 0; $i--) {
+            $date = now()->subDays($i)->format('Y-m-d');
+
+            $transaction = $transactions->get($date);
+
+            $result[] = [
+                'date' => $date,
+                'total_transactions' => $transaction
+                    ? (int) $transaction->total_transactions
+                    : 0,
+                'total_amount' => $transaction
+                    ? (float) $transaction->total_amount
+                    : 0,
+            ];
+        }
+
+        return $result;
+    }
 }
